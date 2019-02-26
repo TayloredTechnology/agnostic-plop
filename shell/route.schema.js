@@ -1,12 +1,12 @@
 const toJsonSchema = require('to-json-schema')
 const R = require('rambdax')
 
+/*
+ * NOTE: toJsonSchema automatically generates a simple JSON schema (ajv)
+ * when supplied with the expected expected data structure.
+ * Additional key values are permitted without breaking the schema
+ */
+
 module.exports = {
-	get: R.map((val, prop) => toJsonSchema(prop), {
-		'/': {everything: 'sound', another: {life: true, lover: false}}
-	}),
-	post: {},
-	put: {},
-	patch: {},
-	delete: {}
+	/* PlopInjection:addVersion */
 }
