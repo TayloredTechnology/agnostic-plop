@@ -3,7 +3,7 @@ const schema = require(__filename.replace('.js', '.schema.js'))
 // const {Users} = require('^iface/db/models/index')
 
 // Core Algorithm Require
-const {{ constantCase verb }} = require('^core/{{ kebabCase name }}/{{ kebabCase verb }}/index')
+const {{ constantCase verb }} = require('^core/routes/{{ kebabCase name }}/{{ kebabCase verb }}/index')
 
 module.exports = async (fastify, options) => {
 	fastify

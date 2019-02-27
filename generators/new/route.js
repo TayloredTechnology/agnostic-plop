@@ -46,37 +46,37 @@ module.exports = {
 	actions: data => {
 		const actions = [
 			{
-				path: `${root}/core/routes/{{ name }}/{{ verb }}/index.js`,
+				path: `${root}/core/routes/{{ kebabCase name }}/{{ kebabCase verb }}/index.js`,
 				skipIfExists: true,
 				templateFile: `${plop}/core/route/index.js`,
 				type: `add`
 			},
 			{
-				path: `${root}/core/routes/{{ name }}/{{ verb }}/v0.js`,
+				path: `${root}/core/routes/{{ kebabCase name }}/{{ kebabCase verb }}/v{{ verMajor }}.js`,
 				skipIfExists: true,
 				templateFile: `${plop}/core/route/v.js`,
 				type: `add`
 			},
 			{
-				path: `${root}/core/routes/{{ name }}/{{ verb }}/v0.spec.js`,
+				path: `${root}/core/routes/{{ kebabCase name }}/{{ kebabCase verb }}/v{{ verMajor }}.spec.js`,
 				skipIfExists: true,
 				templateFile: `${plop}/core/route/v.spec.js`,
 				type: `add`
 			},
 			{
-				path: `${root}/shell/routes/{{ name }}.js`,
+				path: `${root}/shell/routes/{{ kebabCase name }}.js`,
 				skipIfExists: true,
 				templateFile: `${plop}/shell/route.js`,
 				type: `add`
 			},
 			{
-				path: `${root}/shell/routes/{{ name }}.js`,
+				path: `${root}/shell/routes/{{ kebabCase name }}.js`,
 				pattern: '/* PlopInjection:routeName */',
 				templateFile: `${plop}/shell/route-verison.hbs`,
 				type: 'append'
 			},
 			{
-				path: `${root}/shell/routes/{{ name }}.schema.js`,
+				path: `${root}/shell/routes/{{ kebabCase name }}.schema.js`,
 				skipIfExists: true,
 				templateFile: `${plop}/shell/route.schema.js`,
 				type: `add`
@@ -90,7 +90,7 @@ module.exports = {
 			})
 		) {
 			actions.push({
-				path: `${root}/shell/routes/{{ name }}.schema.js`,
+				path: `${root}/shell/routes/{{ kebabCase name }}.schema.js`,
 				pattern: '/* PlopInjection:addVersion */',
 				templateFile: `${plop}/shell/schema-version.hbs`,
 				type: 'append'
