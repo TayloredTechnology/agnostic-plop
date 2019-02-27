@@ -1,22 +1,6 @@
 const root = '../..'
 const plop = '..'
-const fs = require('fs')
-
-function fileContains({filePath, text}) {
-	if (fs.existsSync(filePath)) {
-		const fileData = fs.readFileSync(filePath, {encoding: 'utf-8'})
-		const dataArray = fileData.split('\n')
-		const searchKeyword = text
-
-		for (let index = 0; index < dataArray.length; index++) {
-			if (dataArray[index].includes(searchKeyword)) {
-				return true
-			}
-		}
-
-		return false
-	}
-}
+const {fileContains} = require('../helper')
 
 module.exports = {
 	description: 'Add a new Route to both Core & Shell',
@@ -41,6 +25,11 @@ module.exports = {
 			type: 'input',
 			name: 'verMinor',
 			message: 'Initial Minor Version to be used? (SemVer standard)'
+		},
+		{
+			type: 'input',
+			name: 'functionName',
+			message: 'First Function Name to be used in Data Pipeline?'
 		}
 	],
 	actions: data => {
@@ -49,6 +38,12 @@ module.exports = {
 				path: `${root}/core/routes/{{ kebabCase name }}/{{ kebabCase verb }}/index.js`,
 				skipIfExists: true,
 				templateFile: `${plop}/core/route/index.js`,
+				type: `add`
+			},
+			{
+				path: `${root}/core/routes/{{ kebabCase name }}/{{ kebabCase verb }}/index.spec.js`,
+				skipIfExists: true,
+				templateFile: `${plop}/core/route/index.spec.js`,
 				type: `add`
 			},
 			{
