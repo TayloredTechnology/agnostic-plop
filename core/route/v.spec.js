@@ -4,7 +4,6 @@ const R = require('rambdax')
 const faker = require('faker')
 const rfdc = require('rfdc')({proto: true})
 const {describe, verifyDataMutation} = require('^iface/tap')(__filename)
-const {get} = require('deeps')
 
 const testPath = 'core:route/{{ kebabCase name }}/{{ kebabCase verb }}'
 const rewire = require('rewire')(__filename.replace('.spec', ''))
@@ -31,7 +30,7 @@ describe(`${testPath}@{{ camelCase functionName }}:fallthrough`, async () => {
 		rewire,
 		patches: [
 			{
-				patch: {},
+				patch: undefined,
 				msg: 'initial test'
 			}
 		]
@@ -46,7 +45,7 @@ describe(`${testPath}@{{ camelCase functionName }}`, async () => {
 		rewire,
 		patches: [
 			{
-				patch: {},
+				patch: undefined,
 				msg: 'initial test'
 			}
 		]

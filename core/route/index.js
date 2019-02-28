@@ -1,7 +1,6 @@
 /* eslint unicorn/regex-shorthand: 0 */
 const R = require('rambdax')
 const core = require('^core/index')
-const deeps = require('deeps')
 const isSemVer = require('is-semver')
 const latestSemVer = require('latest-semver')
 const rfdc = require('rfdc')({proto: true})
@@ -22,16 +21,15 @@ pipelines.v{{ verMajor }} = require('./v{{ verMajor }}')
 function _init({request, _cache = {}, _out = {}, ..._passthrough}) {
 	const debug = require('debug')(`${debugPath}@_init`)
 	// RFDC @ entrypoint all mutated objects to prevent parent node mutation
-	const cache = rfdc(_cache)
-	const out = rfdc(_out)
+	let cache = rfdc(_cache)
+	let out = rfdc(_out)
 
 	// Init code shared through version
-	const session = deeps.get(request, 'session')
-	cache.session = session ? rfdc(session) : {}
+	cache = R.change(cache, 'session', rfdc(R.pathOr({}, 'session', request)))
 
 	return {
 		request,
-		_out,
+		_out: out,
 		_cache: cache,
 		..._passthrough
 	}

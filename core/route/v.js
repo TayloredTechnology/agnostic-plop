@@ -1,7 +1,6 @@
 /* eslint unicorn/regex-shorthand: 0 */
 
 const R = require('rambdax')
-const deeps = require('deeps')
 const got = require('got')
 const result = require('await-result')
 const url = require('url-parse')
