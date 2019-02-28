@@ -1,8 +1,6 @@
 /* eslint unicorn/regex-shorthand: 0 */
 const R = require('rambdax')
 const core = require('^core/index')
-const isSemVer = require('is-semver')
-const latestSemVer = require('latest-semver')
 const rfdc = require('rfdc')({proto: true})
 
 const debugPath = 'core:route/{{ kebabCase name }}/{{ kebabCase verb }}'
