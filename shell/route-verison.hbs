@@ -1,14 +1,17 @@
-{
-	version: '{{ verMajor }}.{{ verMinor }}.0',
-	url: '/{{ kebabCase name }}',
-	schema: schema['{{ verMajor }}.{{ verMinor }}.0'].{{ constantCase verb }},
-	method: '{{ constantCase verb }}',
-	handler: async request => {
-		/* Database Model(s) example
-		return Users.query()
-		.where('id', request.session.user_id)
-		.eager('[clusters]')
-		*/
-		return {{ constantCase verb }}({request})
+.route(
+	{
+	version: `${config.routeVersions.{{ camelCase name }} }`,
+		url: '/{{ kebabCase name }}',
+		schema: schema[`${config.routeVersions.{{ camelCase name }} }`].{{ constantCase verb }},
+		method: '{{ constantCase verb }}',
+		handler: async request => {
+			/* Database Model(s) example
+			return Users.query()
+			.where('id', request.session.user_id)
+			.eager('[clusters]')
+			*/
+			return {{ constantCase verb }}({request})
+		}
 	}
-},
+)
+

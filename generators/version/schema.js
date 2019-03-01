@@ -2,7 +2,7 @@ require('resquire')
 
 const root = '../..'
 const plop = '..'
-const {fileContains} = require('../helper')
+const {fileContains, bumpComVer} = require('../helper')
 const R = require('rambdax')
 
 const schemaLatest = R.path('version', require('^iface/schema')())
@@ -17,9 +17,9 @@ module.exports = {
 			choices: ['Major', 'Minor']
 		}
 	],
-	actions: data => {
+	actions: answers => {
 		const newVersion = require('semver-increment')(
-			data.name === 'Major' ? [1, 0, 0] : [0, 1, 0],
+			answers.name === 'Major' ? [1, 0, 0] : [0, 1, 0],
 			schemaLatest
 		)
 		const actions = []
@@ -36,6 +36,12 @@ module.exports = {
 				template: `schemaVersions['${newVersion}'] = {}`,
 				type: 'append'
 			})
+			actions.push(() =>
+				bumpComVer({
+					type: 'schemas',
+					name: '_self'
+				})
+			)
 		}
 
 		return actions

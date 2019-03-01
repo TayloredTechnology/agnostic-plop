@@ -8,7 +8,5 @@ const {{ constantCase verb }} = require('^core/routes/{{ kebabCase name }}/{{ ke
 module.exports = async (fastify, options) => {
 	fastify
 		.addHook('preHandler', fastify.auth([fastify.permittedRouteSession]))
-		.route(
 			/* PlopInjection:routeName */
-		)
 }
