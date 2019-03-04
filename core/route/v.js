@@ -9,6 +9,11 @@ const rfdc = require('rfdc')({proto: true})
 
 const debugPath = 'core:route/{{ kebabCase name }}/{{ kebabCase verb }}'
 
+/*
+ * NOTE: _self is the translation between the MicroService internal business logic data model and external interfaces. When it should be used, format and validation vary depending on the endpoint
+ */
+const _self = require('../_self')
+
 const pipelines = {}
 pipelines['{{ verMajor }}.{{ verMinor }}.0'] = [{{ camelCase functionName }}]
 

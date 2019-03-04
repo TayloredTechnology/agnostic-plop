@@ -1,6 +1,5 @@
 const createMapper = require('map-factory')
-const R = require('rambdax')
-const compareVersions = require('semver-compare')
+const {_selfHelp, schema} = require('^iface/_self')
 
 /* NOTE: this module's architecture is designed with the assumption that ComVer is
  * followed throughout. As such, pipelines are possible where `minor` versions would
@@ -30,39 +29,14 @@ const fromSelf = {
 	]
 }
 
-function versionList({version = null, direction} = {version: null}) {
-	const trans = R.path('transformations', direction)
-	const index = R.findIndex(transform => {
-		return compareVersions(transform.version, version) <= 0
-	}, trans)
-	return index >= 0 ? trans.slice(index) : trans
-}
-
-function highestCompatible({direction, version}) {
-	const sortedBridges = R.keys(direction.bridgeMapping).sort(compareVersions)
-	const bridgeVersion = (version
-		? R.find(bridge => compareVersions(bridge, version) <= 0, sortedBridges)
-		: sortedBridges.slice(-1))[0]
-	return direction.bridgeMapping[bridgeVersion]
-}
-
-async function result({version, data, direction}) {
-	toFrom = direction.toLowerCase() === 'toself' ? toSelf : fromSelf
-	const mapper = createMapper()
-	const compatibleVersion = highestCompatible({direction: toFrom, version})
-	R.map(
-		versionMap => versionMap.mapping(mapper),
-		versionList({version: compatibleVersion, direction: toFrom})
-	)
-	return mapper.executeAsync(data)
-}
-
 // TODO make stamp
-
 module.exports = {
-	result,
+	toSelf: params => _selfHelp.result({...params, direction: toSelf}),
+	fromSelf: params => _selfHelp.result({...params, direction: fromSelf}),
+	schema,
 	latest: {
-		self: highestCompatible({direction: toSelf}),
-		external: highestCompatible({direction: fromSelf})
+		self: params => _selfHelp.highestCompatible({...params, direction: toSelf}),
+		external: params =>
+			_selfHelp.highestCompatible({...params, direction: fromSelf})
 	}
 }
