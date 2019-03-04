@@ -1,9 +1,12 @@
 const pathRoot = '../..'
 const pathPlop = '..'
 const {fileContains, bumpComVer, readComVer} = require('../helper')
+const semverIncrement = require('semver-increment')
+const globby = require('globby')
+const R = require('rambdax')
 
 module.exports = {
-	description: 'Add a new Route to both Core & Shell',
+	description: 'Add a new Route (Minor) to both Core & Shell',
 	prompts: [
 		{
 			type: 'input',
@@ -23,13 +26,17 @@ module.exports = {
 		}
 	],
 	actions: answers => {
-		const comVer = readComVer({type: 'routes', name: answers.name}).split('.')
+		const comVer = semverIncrement(
+			[0, 1, 0],
+			readComVer({type: 'routes', name: answers.name})
+		).split('.')
 
 		// Mutate Upstream to allow HandleBar convenience
 		answers.verMajor = comVer[0]
 		answers.verMinor = comVer[1]
 
 		const actions = [
+			// Route Specifics
 			{
 				path: `${pathRoot}/core/routes/{{ kebabCase name }}/{{ lowerCase verb }}/index.js`,
 				skipIfExists: true,
@@ -78,6 +85,16 @@ module.exports = {
 				templateFile: `${pathPlop}/shell/route.schema.js`,
 				type: `add`
 			},
+
+			// _self mapping
+			{
+				path: `${pathRoot}/core/routes/{{ kebabCase name }}/_self.js`,
+				skipIfExists: true,
+				templateFile: `${pathPlop}/core/route/_self.js`,
+				type: `add`
+			},
+
+			// Adjust Route Version
 			answers =>
 				bumpComVer({
 					type: 'routes',
@@ -85,6 +102,89 @@ module.exports = {
 				})
 		]
 
+		const debug = require('debug')('_self')
+		const preComVer = readComVer({type: 'routes', name: answers.name})
+		const external = comVer.join('.')
+		const _selfPath = `${process.cwd()}/core/routes/${answers.name}/_self.js`
+		const _self = R.path('versions.schemas._self', config)
+
+		debug(preComVer)
+
+		// _self adjustments / relinking to latest version of route
+		if (
+			!fileContains({
+				filePath: _selfPath,
+				text: `'${external}' /* toSelf */:`
+			})
+		) {
+			actions.push({
+				path: _selfPath,
+				pattern: '/* PlopInjection:_self@to */',
+				template: `'${external}' /* toSelf */: '${_self}',`,
+				type: 'append'
+			})
+		}
+
+		if (
+			!fileContains({
+				filePath: _selfPath,
+				text: `version: '${_self}' /* toSelf */`
+			})
+		) {
+			actions.push({
+				path: _selfPath,
+				pattern: '/* PlopInjection:_self@toTransformation */',
+				template: `{version: '${_self}' /* toSelf */, mapping: async mapper => mapper},`,
+				type: 'append'
+			})
+		}
+
+		if (
+			fileContains({
+				filePath: _selfPath,
+				text: `'${_self}' /* fromSelf */:`
+			})
+		) {
+			actions.push({
+				path: _selfPath,
+				pattern: `'${_self}' /* fromSelf */: '${preComVer}'`,
+				template: `'${_self}' /* fromSelf */: '${external}'`,
+				type: 'modify'
+			})
+		} else {
+			actions.push({
+				path: _selfPath,
+				pattern: '/* PlopInjection:_self@from */',
+				template: `'${_self}' /* fromSelf */: '${external}',`,
+				type: 'append'
+			})
+		}
+
+		if (
+			!fileContains({
+				filePath: _selfPath,
+				text: `version: '${external}' /* fromSelf */`
+			})
+		) {
+			actions.push({
+				path: _selfPath,
+				pattern: '/* PlopInjection:_self@fromTransformation */',
+				template: `{version: '${external}' /* fromSelf */, mapping: async mapper => mapper},`,
+				type: 'append'
+			})
+		}
+
+		// Increment Version to latest in all existing Verbs
+		globby.sync(`core/**/v${answers.verMajor}.js`).map(verb => {
+			return actions.push({
+				path: `${process.cwd()}/${verb}`,
+				pattern: '/* PlopInjection:addVersion */',
+				template: `pipelines['${external}'] = R.flatten(R.append([/* TODO */], pipelines['${preComVer}']))`,
+				type: 'append'
+			})
+		})
+
+		// Test Updates / Injections
 		if (
 			!fileContains({
 				filePath: `${process.cwd()}/shell/routes/${answers.name}.schema.js`,
@@ -99,6 +199,7 @@ module.exports = {
 			})
 		}
 
+		// Register route with Fastify
 		if (
 			!fileContains({
 				filePath: `${process.cwd()}/index.js`,

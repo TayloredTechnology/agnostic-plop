@@ -52,7 +52,7 @@ function readComVer({type = 'routes', name}) {
 	const fs = require('fs-extra')
 	const R = require('rambdax')
 	return R.pathOr(
-		'0.1.0',
+		'0.0.0',
 		`versions.${camelCase(pluralize(type))}.${camelCase(name)}`,
 		fs.readJsonSync(`${process.cwd()}/config/default.json`)
 	)
@@ -61,7 +61,9 @@ function readComVer({type = 'routes', name}) {
 function bumpComVer({type = 'routes', name}) {
 	return changeJson({
 		path: `${process.cwd()}/config/default.json`,
-		keyPath: `versions.${camelCase(pluralize(type))}.${camelCase(name)}`,
+		keyPath: `versions.${camelCase(pluralize(type))}.${
+			name === '_self' ? name : camelCase(name)
+		}`,
 		bump: 'minor'
 	})
 }

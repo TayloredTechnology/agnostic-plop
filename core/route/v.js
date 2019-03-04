@@ -11,7 +11,6 @@ const debugPath = 'core:route/{{ kebabCase name }}/{{ kebabCase verb }}'
 
 const pipelines = {}
 pipelines['{{ verMajor }}.{{ verMinor }}.0'] = [{{ camelCase functionName }}]
-//pipelines['{{ verMajor }}.{{ verMinor }}.0'] = R.flatten(R.append([persistCartWithUser], pipelines['{{ verMajor }}.{{ verMinor }}.0']))
 
 async function {{ camelCase functionName }}({
 	..._passthrough

@@ -1,10 +1,11 @@
 'use strict'
+global.config = require('config')
 
 module.exports = function(plop) {
 	plop.setWelcomeMessage('Inject a Bumped ComVer into the MicroService')
 	plop.setGenerator(
-		'schema (internal)',
-		require('../generators/version/schema.js')
+		'_self (internal)',
+		require('../generators/version/_self.js')
 	)
 	plop.setGenerator(
 		'route (endpoint)',
