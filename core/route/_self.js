@@ -31,12 +31,15 @@ const fromSelf = {
 
 // TODO make stamp
 module.exports = {
-	toSelf: params => _selfHelp.result({...params, direction: toSelf}),
-	fromSelf: params => _selfHelp.result({...params, direction: fromSelf}),
+	toSelf: /* istanbul ignore next */ params =>
+		_selfHelp.result({...params, direction: toSelf}),
+	fromSelf: /* istanbul ignore next */ params =>
+		_selfHelp.result({...params, direction: fromSelf}),
 	schema,
 	latest: {
-		self: params => _selfHelp.highestCompatible({...params, direction: toSelf}),
-		external: params =>
+		self: /* istanbul ignore next */ params =>
+			_selfHelp.highestCompatible({...params, direction: toSelf}),
+		external: /* istanbul ignore next */ params =>
 			_selfHelp.highestCompatible({...params, direction: fromSelf})
 	}
 }

@@ -86,14 +86,6 @@ module.exports = {
 				type: `add`
 			},
 
-			// _self mapping
-			{
-				path: `${pathRoot}/core/routes/{{ kebabCase name }}/_self.js`,
-				skipIfExists: true,
-				templateFile: `${pathPlop}/core/route/_self.js`,
-				type: `add`
-			},
-
 			// Adjust Route Version
 			answers =>
 				bumpComVer({
@@ -102,15 +94,19 @@ module.exports = {
 				})
 		]
 
-		const debug = require('debug')('_self')
 		const preComVer = readComVer({type: 'routes', name: answers.name})
 		const external = comVer.join('.')
 		const _selfPath = `${process.cwd()}/core/routes/${answers.name}/_self.js`
 		const _self = R.path('versions.schemas._self', config)
 
-		debug(preComVer)
-
 		// _self adjustments / relinking to latest version of route
+		actions.push({
+			path: `${pathRoot}/core/routes/{{ kebabCase name }}/_self.js`,
+			skipIfExists: true,
+			templateFile: `${pathPlop}/core/route/_self.js`,
+			type: `add`
+		})
+
 		if (
 			!fileContains({
 				filePath: _selfPath,
@@ -173,6 +169,26 @@ module.exports = {
 				type: 'append'
 			})
 		}
+
+		// _self spec sync
+		actions.push({
+			path: `${pathRoot}/core/routes/{{ kebabCase name }}/_self.spec.js`,
+			skipIfExists: true,
+			templateFile: `${pathPlop}/core/route/_self.spec.js`,
+			type: `add`
+		})
+		actions.push({
+			path: `${pathRoot}/core/routes/{{ kebabCase name }}/_self.spec.js`,
+			pattern: /PlopReplace:toSelf/g,
+			template: `${_self}`,
+			type: 'modify'
+		})
+		actions.push({
+			path: `${pathRoot}/core/routes/{{ kebabCase name }}/_self.spec.js`,
+			pattern: /PlopReplace:fromSelf/g,
+			template: `${external}`,
+			type: 'modify'
+		})
 
 		// Increment Version to latest in all existing Verbs
 		globby.sync(`core/**/v${answers.verMajor}.js`).map(verb => {
