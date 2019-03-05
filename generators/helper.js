@@ -58,12 +58,13 @@ function readComVer({type = 'routes', name}) {
 	)
 }
 
-function bumpComVer({type = 'routes', name}) {
+function bumpComVer({type = 'routes', name, bump = 'minor'}) {
+	bump = bump.toLowerCase()
 	return changeJson({
 		path: `${process.cwd()}/config/default.json`,
 		keyPath: `versions.${camelCase(pluralize(type))}.${
 			name === '_self' ? name : camelCase(name)
 		}`,
-		bump: 'minor'
+		bump
 	})
 }

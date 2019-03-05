@@ -6,7 +6,7 @@ const {fileContains, bumpComVer} = require('../helper')
 const R = require('rambdax')
 const globby = require('globby')
 
-const schemaLatest = R.path('version', require('^iface/_self')())
+const schemaLatest = R.path('version', require('^iface/_self').schema())
 
 // Regex for all _self files and then inject into them
 

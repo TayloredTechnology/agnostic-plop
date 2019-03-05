@@ -191,14 +191,16 @@ module.exports = {
 		})
 
 		// Increment Version to latest in all existing Verbs
-		globby.sync(`core/**/v${answers.verMajor}.js`).map(verb => {
-			return actions.push({
-				path: `${process.cwd()}/${verb}`,
-				pattern: '/* PlopInjection:addVersion */',
-				template: `pipelines['${external}'] = R.flatten(R.append([/* TODO */], pipelines['${preComVer}']))`,
-				type: 'append'
+		globby
+			.sync(`core/routes/${answers.name}/**/v${answers.verMajor}.js`)
+			.map(verb => {
+				return actions.push({
+					path: `${process.cwd()}/${verb}`,
+					pattern: '/* PlopInjection:addVersion */',
+					template: `pipelines['${external}'] = R.flatten(R.append([/* TODO */], pipelines['${preComVer}']))`,
+					type: 'append'
+				})
 			})
-		})
 
 		// Test Updates / Injections
 		if (

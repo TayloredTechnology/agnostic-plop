@@ -3,6 +3,7 @@ const schema = require(__filename.replace('.js', '.schema.js'))
 // const {Users} = require('^iface/db/models/index')
 
 // Core Algorithm Require
+/* PlopInjection:routeVerb */
 const {{ constantCase verb }} = require('^core/routes/{{ kebabCase name }}/{{ kebabCase verb }}/index')
 
 module.exports = async (fastify, options) => {

@@ -1,6 +1,6 @@
 .route(
 	{
-	version: `${config.routeVersions.{{ camelCase name }} }`,
+	version: `${config.versions.routes.{{ camelCase name }} }`,
 		url: '/{{ kebabCase name }}',
 		schema: schema[`${config.routeVersions.{{ camelCase name }} }`].{{ constantCase verb }},
 		method: '{{ constantCase verb }}',

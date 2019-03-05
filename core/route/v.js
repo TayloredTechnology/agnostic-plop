@@ -16,6 +16,7 @@ const _self = require('../_self')
 
 const pipelines = {}
 pipelines['{{ verMajor }}.{{ verMinor }}.0'] = [{{ camelCase functionName }}]
+/* PlopInjection:addVersion */
 
 async function {{ camelCase functionName }}({
 	..._passthrough

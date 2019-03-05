@@ -8,6 +8,7 @@ const debugPath = 'core:route/{{ kebabCase name }}/{{ kebabCase verb }}'
 // Pipeline Definition / Import
 const pipelines = {}
 pipelines.v{{ verMajor }} = require('./v{{ verMajor }}')
+/* PlopInjection:addVersion */
 
 /*
  * NOTE: within pipelines its critical to rfdc at incoming data points to avoid
