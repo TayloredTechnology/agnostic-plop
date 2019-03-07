@@ -1,6 +1,8 @@
-const fs = require('fs')
+const fs = require('fs-extra')
 const {camelCase} = require('change-case')
 const pluralize = require('pluralize')
+const R = require('rambdax')
+const debug = require('debug')('_self')
 
 module.exports = {fileContains, changeJson, bumpComVer, readComVer}
 
@@ -18,9 +20,11 @@ function fileContains({filePath, text}) {
 
 		return false
 	}
+
+	return false
 }
 
-function changeJson({path, keyPath, value, bump = {}}) {
+function changeJson({path, answers, type, keyPath, value, bump = {}}) {
 	const fs = require('fs-extra')
 	const R = require('rambdax')
 	const semverIncrement = require('semver-increment')
@@ -38,33 +42,73 @@ function changeJson({path, keyPath, value, bump = {}}) {
 		default:
 	}
 
-	json = R.change(
-		json,
-		keyPath,
-		semverIncrement(bumpType, R.pathOr('0.0.0', keyPath, json))
-	)
+	let mergeData
+	let existingVersion = R.pathOr('0.0.0', keyPath, json)
+	if (R.type(existingVersion) === 'Object')
+		existingVersion = latestComVerKey(existingVersion)
+
+	switch (type) {
+		case 'rests':
+			mergeData = R.change({}, `versions.${type}.${answers.name}`, {})
+			mergeData.versions[type][answers.name][
+				semverIncrement(bumpType, existingVersion)
+			] = {
+				baseURL: answers.baseURL
+			}
+			json = R.mergeDeep(json, mergeData)
+			break
+		case 'routes':
+			json = R.change(json, keyPath, semverIncrement(bumpType, existingVersion))
+			break
+		default:
+	}
+
+	debug(json)
+
 	fs.writeJsonSync(path, bumpType ? json : R.change(json, keyPath, value))
 
 	return `JSON @${path} updated and written!`
 }
 
+function latestComVerKey({versions}) {
+	return versions
+		? R.last(R.keys(versions).sort(require('semver-compare')))
+		: '0.0.0'
+}
+
 function readComVer({type = 'routes', name}) {
-	const fs = require('fs-extra')
-	const R = require('rambdax')
-	return R.pathOr(
+	const possibleVersion = R.pathOr(
 		'0.0.0',
 		`versions.${camelCase(pluralize(type))}.${camelCase(name)}`,
 		fs.readJsonSync(`${process.cwd()}/config/default.json`)
 	)
+
+	switch (type) {
+		case 'rests':
+			debug(
+				'readcom',
+				latestComVerKey(possibleVersion),
+				possibleVersion,
+				type,
+				name
+			)
+			return latestComVerKey(possibleVersion)
+		case 'routes':
+			return possibleVersion
+		default:
+	}
 }
 
-function bumpComVer({type = 'routes', name, bump = 'minor'}) {
+function bumpComVer({type = 'routes', answers, bump = 'minor'}) {
 	bump = bump.toLowerCase()
+	const {name} = answers
 	return changeJson({
+		answers,
 		path: `${process.cwd()}/config/default.json`,
 		keyPath: `versions.${camelCase(pluralize(type))}.${
 			name === '_self' ? name : camelCase(name)
 		}`,
-		bump
+		bump,
+		type
 	})
 }

@@ -4,10 +4,8 @@ const schema = require(__filename.replace('.js', '.schema.js'))
 
 // Core Algorithm Require
 /* PlopInjection:routeVerb */
-const {{ constantCase verb }} = require('^core/routes/{{ kebabCase name }}/{{ kebabCase verb }}/index')
 
 module.exports = async (fastify, options) => {
-	fastify
-		.addHook('preHandler', fastify.auth([fastify.permittedRouteSession]))
-			/* PlopInjection:routeName */
+	fastify.addHook('preHandler', fastify.auth([fastify.permittedRouteSession]))
+	/* PlopInjection:routeName */
 }
