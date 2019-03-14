@@ -2,7 +2,7 @@ const pathPlop = '..'
 const pathRoot = '../..'
 
 const R = require('rambdax')
-const common = require('./common')
+const {_toSelf} = require('./common')
 const semverIncrement = require('semver-increment')
 const {bumpComVer, readComVer} = require('../helper')
 
@@ -77,20 +77,28 @@ module.exports = {
 				},
 				// Shell Specifics
 				{
+					path: `${pathRoot}/shell/rests/common.js`,
+					skipIfExists: true,
+					templateFile: `${pathPlop}/shell/rest-common.js`,
+					type: `add`
+				},
+				{
 					path: `${pathRoot}/shell/rests/{{ kebabCase name }}.js`,
 					skipIfExists: true,
 					templateFile: `${pathPlop}/shell/rest.js`,
 					type: `add`
-				},
-				// Adjust Route Version
-				answers =>
-					bumpComVer({
-						type: 'rests',
-						answers
-					})
+				}
 			])
 		})
 
+		actions.push(
+			// Adjust Route Version
+			answers =>
+				bumpComVer({
+					type: 'rests',
+					answers
+				})
+		)
 		verbs.forEach(verb => {
 			actions.push({
 				path: `${pathRoot}/shell/rests/{{ kebabCase name }}.js`,
@@ -100,8 +108,16 @@ module.exports = {
 			})
 		})
 
+		// Add Version
+		actions.push({
+			path: `${pathRoot}/shell/rests/{{ kebabCase name }}.js`,
+			pattern: `/* PlopInjection:addReadVersion */`,
+			templateFile: `${pathPlop}/shell/rest-version.hbs`,
+			type: 'append'
+		})
+
 		actions.push(
-			common._toSelf({
+			_toSelf({
 				type: 'rest',
 				external: comVer.join('.'),
 				preComVer: readComVer({type: 'rests', name: answers.name}),
@@ -109,6 +125,8 @@ module.exports = {
 			})
 		)
 
+		const debug = require('debug')('_inject')
+		debug(R.flatten(actions))
 		return R.flatten(actions)
 	}
 }

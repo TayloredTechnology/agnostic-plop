@@ -1,6 +1,7 @@
-const pluralize = require('pluralize')
-const {fileContains} = require('../helper')
 const R = require('rambdax')
+const globby = require('globby')
+const pluralize = require('pluralize')
+const {fileContains, bumpComVer} = require('../helper')
 
 function _toSelf({
 	pathRoot = '../..',
@@ -14,36 +15,8 @@ function _toSelf({
 	const _selfPath = `${process.cwd()}/core/${types}/${answers.name}/_self.js`
 	const _self = R.path('versions.schemas._self', config)
 
-	const actions = [
-		// _self spec sync
-		{
-			path: `${pathRoot}/core/${types}/{{ kebabCase name }}/_self.spec.js`,
-			skipIfExists: true,
-			templateFile: `${pathPlop}/core/${type}/_self.spec.js`,
-			type: `add`
-		},
-		{
-			path: `${pathRoot}/core/${types}/{{ kebabCase name }}/_self.spec.js`,
-			pattern: /PlopReplace:toSelf/g,
-			template: `${_self}`,
-			type: 'modify'
-		},
-		{
-			path: `${pathRoot}/core/${types}/{{ kebabCase name }}/_self.spec.js`,
-			pattern: /PlopReplace:fromSelf/g,
-			template: `${external}`,
-			type: 'modify'
-		}
-	]
-
-	// _self adjustments / relinking to latest version
-	actions.push({
-		path: `${pathRoot}/core/${types}/{{ kebabCase name }}/_self.js`,
-		skipIfExists: true,
-		templateFile: `${pathPlop}/core/${type}/_self.js`,
-		type: `add`
-	})
-
+	const actions = []
+	// _self adjustments / relinking to latest version of route
 	if (
 		!fileContains({
 			filePath: _selfPath,
@@ -107,17 +80,44 @@ function _toSelf({
 		})
 	}
 
-	// Increment Version to latest in all existing Verbs
-	require('globby')
-		.sync(`core/${types}/${answers.name}/**/v${answers.verMajor}.js`)
-		.map(verb => {
-			return actions.push({
-				path: `${process.cwd()}/${verb}`,
-				pattern: '/* PlopInjection:addVersion */',
-				template: `pipelines['${external}'] = R.flatten(R.append([/* TODO */], pipelines['${preComVer}']))`,
-				type: 'append'
+	if (answers.bump === 'Minor') {
+		globby
+			.sync(`core/${types}/${answers.name}/**/v${answers.verMajor}.js`)
+			.map(verb => {
+				return actions.push({
+					path: `${process.cwd()}/${verb}`,
+					pattern: '/* PlopInjection:addVersion */',
+					template: `pipelines['${external}'] = R.flatten(R.append([/* TODO */], pipelines['${preComVer}']))`,
+					type: 'append'
+				})
 			})
-		})
+	} else {
+		globby
+			.sync(`core/${types}/${answers.name}/**`, {
+				onlyDirectories: true,
+				deep: 0
+			})
+			.map(endpoint => {
+				actions.push({
+					path: `${process.cwd()}/${endpoint}/v{{ verMajor }}.js`,
+					skipIfExists: true,
+					templateFile: `${pathPlop}/core/${type}/v.js`,
+					type: `add`
+				})
+				actions.push({
+					path: `${process.cwd()}/${endpoint}/v{{ verMajor }}.spec.js`,
+					skipIfExists: true,
+					templateFile: `${pathPlop}/core/${type}/v.spec.js`,
+					type: `add`
+				})
+				return actions.push({
+					path: `${process.cwd()}/${endpoint}/index.js`,
+					pattern: '/* PlopInjection:addVersion */',
+					template: `pipelines.v{{ verMajor }} = require('./v{{ verMajor }}')`,
+					type: 'append'
+				})
+			})
+	}
 
 	return actions
 }

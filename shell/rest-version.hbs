@@ -1,0 +1,19 @@
+readVersions['{{ version }}'] = async ({version} = {}) => {
+	const debug = require('debug')(
+		`${debugPath}@read:${version ? version : 'latest'}`
+	)
+	// Default to latest version should no valid version be supplied
+	const stream = await iface({api, version})
+		.url(/* Replace With URL Path to read*/)
+		.read([{aNamedForkOfPipe: [{type: 'pick', filter: 'list', isArray: true}]}])
+
+	// Streams should be sent to the respective core / shell for processing
+	stream.on('aNamedForkOfPipe', data => core.read({data}))
+	stream.on('raw', data => debug(data))
+
+	// NOTE: Stream may not end, while results of external api are streamed, the API itself may not respect the stream and fail to issue the close() notification
+	stream.on('end', () =>
+		console.log(`${api}@READ:${version ? version : 'latest'} completed`)
+	)
+}
+

@@ -11,4 +11,5 @@ module.exports = function(plop) {
 		'route (endpoint)',
 		require('../generators/version/route.js')
 	)
+	plop.setGenerator('rest (api)', require('../generators/version/rest.js'))
 }

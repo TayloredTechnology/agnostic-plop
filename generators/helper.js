@@ -44,8 +44,8 @@ function changeJson({path, answers, type, keyPath, value, bump = {}}) {
 
 	let mergeData
 	let existingVersion = R.pathOr('0.0.0', keyPath, json)
-	if (R.type(existingVersion) === 'Object')
-		existingVersion = latestComVerKey(existingVersion)
+	if (R.isType('Object', existingVersion))
+		existingVersion = latestComVerKey({versions: existingVersion})
 
 	switch (type) {
 		case 'rests':
@@ -55,9 +55,11 @@ function changeJson({path, answers, type, keyPath, value, bump = {}}) {
 			] = {
 				baseURL: answers.baseURL
 			}
+			debug(mergeData)
 			json = R.mergeDeep(json, mergeData)
 			break
 		case 'routes':
+		case 'schemas':
 			json = R.change(json, keyPath, semverIncrement(bumpType, existingVersion))
 			break
 		default:
@@ -70,37 +72,33 @@ function changeJson({path, answers, type, keyPath, value, bump = {}}) {
 	return `JSON @${path} updated and written!`
 }
 
-function latestComVerKey({versions}) {
+function latestComVerKey({versions} = {}) {
 	return versions
 		? R.last(R.keys(versions).sort(require('semver-compare')))
 		: '0.0.0'
 }
 
 function readComVer({type = 'routes', name}) {
-	const possibleVersion = R.pathOr(
-		'0.0.0',
-		`versions.${camelCase(pluralize(type))}.${camelCase(name)}`,
-		fs.readJsonSync(`${process.cwd()}/config/default.json`)
-	)
+	debug(config)
+	const versionsPath = `versions.${camelCase(pluralize(type))}.${camelCase(
+		name
+	)}`
+	const readJSON = fs.readJsonSync(`${process.cwd()}/config/default.json`)
+	debug(versionsPath, R.path(versionsPath, readJSON))
 
 	switch (type) {
 		case 'rests':
-			debug(
-				'readcom',
-				latestComVerKey(possibleVersion),
-				possibleVersion,
-				type,
-				name
-			)
-			return latestComVerKey(possibleVersion)
+			return latestComVerKey({
+				versions: R.pathOr({'0.0.0': {}}, versionsPath, readJSON)
+			})
 		case 'routes':
-			return possibleVersion
+			return R.pathOr('0.0.0', versionsPath, readJSON)
 		default:
 	}
 }
 
-function bumpComVer({type = 'routes', answers, bump = 'minor'}) {
-	bump = bump.toLowerCase()
+function bumpComVer({type = 'routes', answers}) {
+	const bump = R.pathOr('minor', 'bump', answers).toLowerCase()
 	const {name} = answers
 	return changeJson({
 		answers,

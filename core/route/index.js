@@ -43,10 +43,10 @@ function _end({request, _out, _cache}) {
 
 /* istanbul ignore next */
 module.exports = data => {
-	const {request} = data
+	const {request, versions} = data
 	const pipeline = R.flatten([
 		_init,
-		require('^core/select-pipeline')({request, pipelines}),
+		require('^core/select-pipeline')({request, pipelines, versions}),
 		_end
 	])
 	return core

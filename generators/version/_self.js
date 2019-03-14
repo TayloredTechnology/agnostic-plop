@@ -1,12 +1,13 @@
-require('resquire')
-
 const root = '../..'
 const plop = '..'
 const {fileContains, bumpComVer} = require('../helper')
 const R = require('rambdax')
 const globby = require('globby')
 
-const schemaLatest = R.path('version', require('^iface/_self').schema())
+const schemaLatest = R.path(
+	'version',
+	require(`${process.cwd()}/iface/_self`).schema()
+)
 
 // Regex for all _self files and then inject into them
 
@@ -50,7 +51,12 @@ module.exports = {
 			const configPath = R.takeLast(3, _selfPath.split('/'))
 				.join('.')
 				.slice(0, -9)
-			const external = R.path(`versions.${configPath}`, config)
+			let external = R.path(`versions.${configPath}`, config)
+			if (configPath.includes('rests')) {
+				const compareVersions = require('semver-compare')
+				external = R.last(R.keys(external).sort(compareVersions))
+			}
+
 			debug(_selfPath, configPath, external, schemaLatest)
 
 			// _self adjustments / relinking to latest version of route
@@ -110,7 +116,7 @@ module.exports = {
 		actions.push(() =>
 			bumpComVer({
 				type: 'schemas',
-				name: '_self'
+				answers: {name: '_self'}
 			})
 		)
 		return actions
