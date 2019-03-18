@@ -1,6 +1,3 @@
-const pathPlop = '..'
-const pathRoot = '../..'
-
 const R = require('rambdax')
 const {_toSelf} = require('./common')
 const semverIncrement = require('semver-increment')
@@ -52,40 +49,40 @@ module.exports = {
 			// Core Specifics
 			actions.push([
 				{
-					path: `${pathRoot}/core/rests/{{ kebabCase name }}/${verb}/index.js`,
+					path: `core/rests/{{ kebabCase name }}/${verb}/index.js`,
 					skipIfExists: false, // Abort as REST API should only be init once
-					templateFile: `${pathPlop}/core/rest/index.js`,
+					templateFile: `plop/core/rest/index.js`,
 					type: `add`
 				},
 				{
-					path: `${pathRoot}/core/rests/{{ kebabCase name }}/${verb}/index.spec.js`,
+					path: `core/rests/{{ kebabCase name }}/${verb}/index.spec.js`,
 					skipIfExists: true,
-					templateFile: `${pathPlop}/core/rest/index.spec.js`,
+					templateFile: `plop/core/rest/index.spec.js`,
 					type: `add`
 				},
 				{
-					path: `${pathRoot}/core/rests/{{ kebabCase name }}/${verb}/v{{ verMajor }}.js`,
+					path: `core/rests/{{ kebabCase name }}/${verb}/v{{ verMajor }}.js`,
 					skipIfExists: true,
-					templateFile: `${pathPlop}/core/rest/v.js`,
+					templateFile: `plop/core/rest/v.js`,
 					type: `add`
 				},
 				{
-					path: `${pathRoot}/core/rests/{{ kebabCase name }}/${verb}/v{{ verMajor }}.spec.js`,
+					path: `core/rests/{{ kebabCase name }}/${verb}/v{{ verMajor }}.spec.js`,
 					skipIfExists: true,
-					templateFile: `${pathPlop}/core/rest/v.spec.js`,
+					templateFile: `plop/core/rest/v.spec.js`,
 					type: `add`
 				},
 				// Shell Specifics
 				{
-					path: `${pathRoot}/shell/rests/common.js`,
+					path: `shell/rests/common.js`,
 					skipIfExists: true,
-					templateFile: `${pathPlop}/shell/rest-common.js`,
+					templateFile: `plop/shell/rest-common.js`,
 					type: `add`
 				},
 				{
-					path: `${pathRoot}/shell/rests/{{ kebabCase name }}.js`,
+					path: `shell/rests/{{ kebabCase name }}.js`,
 					skipIfExists: true,
-					templateFile: `${pathPlop}/shell/rest.js`,
+					templateFile: `plop/shell/rest.js`,
 					type: `add`
 				}
 			])
@@ -101,7 +98,7 @@ module.exports = {
 		)
 		verbs.forEach(verb => {
 			actions.push({
-				path: `${pathRoot}/shell/rests/{{ kebabCase name }}.js`,
+				path: `shell/rests/{{ kebabCase name }}.js`,
 				pattern: `/* PlopReplace:${verb} */`,
 				template: `core.${verb} = require('^core/rests/{{ kebabCase name }}/${verb}/index')`,
 				type: 'modify'
@@ -110,9 +107,9 @@ module.exports = {
 
 		// Add Version
 		actions.push({
-			path: `${pathRoot}/shell/rests/{{ kebabCase name }}.js`,
+			path: `shell/rests/{{ kebabCase name }}.js`,
 			pattern: `/* PlopInjection:addReadVersion */`,
-			templateFile: `${pathPlop}/shell/rest-version.hbs`,
+			templateFile: `plop/shell/rest-version.hbs`,
 			type: 'append'
 		})
 

@@ -3,14 +3,7 @@ const globby = require('globby')
 const pluralize = require('pluralize')
 const {fileContains, bumpComVer} = require('../helper')
 
-function _toSelf({
-	pathRoot = '../..',
-	pathPlop = '..',
-	type,
-	external,
-	preComVer,
-	answers
-}) {
+function _toSelf({type, external, preComVer, answers}) {
 	const types = pluralize.plural(type)
 	const _selfPath = `${process.cwd()}/core/${types}/${answers.name}/_self.js`
 	const _self = R.path('versions.schemas._self', config)
@@ -101,13 +94,13 @@ function _toSelf({
 				actions.push({
 					path: `${process.cwd()}/${endpoint}/v{{ verMajor }}.js`,
 					skipIfExists: true,
-					templateFile: `${pathPlop}/core/${type}/v.js`,
+					templateFile: `plop/core/${type}/v.js`,
 					type: `add`
 				})
 				actions.push({
 					path: `${process.cwd()}/${endpoint}/v{{ verMajor }}.spec.js`,
 					skipIfExists: true,
-					templateFile: `${pathPlop}/core/${type}/v.spec.js`,
+					templateFile: `plop/core/${type}/v.spec.js`,
 					type: `add`
 				})
 				return actions.push({

@@ -1,6 +1,3 @@
-const pathPlop = '..'
-const pathRoot = '../..'
-
 const R = require('rambdax')
 const common = require('./common')
 const semverIncrement = require('semver-increment')
@@ -41,52 +38,52 @@ module.exports = {
 		const actions = [
 			// Core Specifics
 			{
-				path: `${pathRoot}/core/routes/{{ kebabCase name }}/{{ lowerCase verb }}/index.js`,
+				path: `core/routes/{{ kebabCase name }}/{{ lowerCase verb }}/index.js`,
 				skipIfExists: true,
-				templateFile: `${pathPlop}/core/route/index.js`,
+				templateFile: `plop/core/route/index.js`,
 				type: `add`
 			},
 			{
-				path: `${pathRoot}/core/routes/{{ kebabCase name }}/{{ lowerCase verb }}/index.spec.js`,
+				path: `core/routes/{{ kebabCase name }}/{{ lowerCase verb }}/index.spec.js`,
 				skipIfExists: true,
-				templateFile: `${pathPlop}/core/route/index.spec.js`,
+				templateFile: `plop/core/route/index.spec.js`,
 				type: `add`
 			},
 			{
-				path: `${pathRoot}/core/routes/{{ kebabCase name }}/{{ lowerCase verb }}/v{{ verMajor }}.js`,
+				path: `core/routes/{{ kebabCase name }}/{{ lowerCase verb }}/v{{ verMajor }}.js`,
 				skipIfExists: true,
-				templateFile: `${pathPlop}/core/route/v.js`,
+				templateFile: `plop/core/route/v.js`,
 				type: `add`
 			},
 			{
-				path: `${pathRoot}/core/routes/{{ kebabCase name }}/{{ lowerCase verb }}/v{{ verMajor }}.spec.js`,
+				path: `core/routes/{{ kebabCase name }}/{{ lowerCase verb }}/v{{ verMajor }}.spec.js`,
 				skipIfExists: true,
-				templateFile: `${pathPlop}/core/route/v.spec.js`,
+				templateFile: `plop/core/route/v.spec.js`,
 				type: `add`
 			},
 			// Shell Specifics
 			{
-				path: `${pathRoot}/shell/routes/{{ kebabCase name }}.js`,
+				path: `shell/routes/{{ kebabCase name }}.js`,
 				skipIfExists: true,
-				templateFile: `${pathPlop}/shell/route.js`,
+				templateFile: `plop/shell/route.js`,
 				type: `add`
 			},
 			{
-				path: `${pathRoot}/shell/routes/{{ kebabCase name }}.js`,
+				path: `shell/routes/{{ kebabCase name }}.js`,
 				pattern: '/* PlopInjection:routeVerb */',
 				template: `const {{ constantCase verb }} = require('^core/routes/{{ kebabCase name }}/{{ lowerCase verb }}/index')`,
 				type: 'append'
 			},
 			{
-				path: `${pathRoot}/shell/routes/{{ kebabCase name }}.js`,
+				path: `shell/routes/{{ kebabCase name }}.js`,
 				pattern: '/* PlopInjection:routeName */',
-				templateFile: `${pathPlop}/shell/route-verison.hbs`,
+				templateFile: `plop/shell/route-verison.hbs`,
 				type: 'append'
 			},
 			{
-				path: `${pathRoot}/shell/routes/{{ kebabCase name }}.schema.js`,
+				path: `shell/routes/{{ kebabCase name }}.schema.js`,
 				skipIfExists: true,
-				templateFile: `${pathPlop}/shell/route.schema.js`,
+				templateFile: `plop/shell/route.schema.js`,
 				type: `add`
 			},
 			// Adjust Route Version
@@ -114,9 +111,9 @@ module.exports = {
 			})
 		) {
 			actions.push({
-				path: `${pathRoot}/shell/routes/{{ kebabCase name }}.schema.js`,
+				path: `shell/routes/{{ kebabCase name }}.schema.js`,
 				pattern: '/* PlopInjection:addVersion */',
-				templateFile: `${pathPlop}/shell/schema-version.hbs`,
+				templateFile: `plop/shell/schema-version.hbs`,
 				type: 'append'
 			})
 		}
@@ -129,7 +126,7 @@ module.exports = {
 			})
 		) {
 			actions.push({
-				path: `${pathRoot}/index.js`,
+				path: `index.js`,
 				pattern: '/* PlopInjection:routeName */',
 				template: ".register(require('^shell/routes/{{ lowerCase name }}'))",
 				type: 'append'

@@ -2,14 +2,7 @@ const pluralize = require('pluralize')
 const {fileContains} = require('../helper')
 const R = require('rambdax')
 
-function _toSelf({
-	pathRoot = '../..',
-	pathPlop = '..',
-	type,
-	external,
-	preComVer,
-	answers
-}) {
+function _toSelf({type, external, preComVer, answers}) {
 	const types = pluralize.plural(type)
 	const _selfPath = `${process.cwd()}/core/${types}/${answers.name}/_self.js`
 	const _self = R.path('versions.schemas._self', config)
@@ -17,19 +10,19 @@ function _toSelf({
 	const actions = [
 		// _self spec sync
 		{
-			path: `${pathRoot}/core/${types}/{{ kebabCase name }}/_self.spec.js`,
+			path: `core/${types}/{{ kebabCase name }}/_self.spec.js`,
 			skipIfExists: true,
-			templateFile: `${pathPlop}/core/${type}/_self.spec.js`,
+			templateFile: `plop/core/${type}/_self.spec.js`,
 			type: `add`
 		},
 		{
-			path: `${pathRoot}/core/${types}/{{ kebabCase name }}/_self.spec.js`,
+			path: `core/${types}/{{ kebabCase name }}/_self.spec.js`,
 			pattern: /PlopReplace:toSelf/g,
 			template: `${_self}`,
 			type: 'modify'
 		},
 		{
-			path: `${pathRoot}/core/${types}/{{ kebabCase name }}/_self.spec.js`,
+			path: `core/${types}/{{ kebabCase name }}/_self.spec.js`,
 			pattern: /PlopReplace:fromSelf/g,
 			template: `${external}`,
 			type: 'modify'
@@ -38,9 +31,9 @@ function _toSelf({
 
 	// _self adjustments / relinking to latest version
 	actions.push({
-		path: `${pathRoot}/core/${types}/{{ kebabCase name }}/_self.js`,
+		path: `core/${types}/{{ kebabCase name }}/_self.js`,
 		skipIfExists: true,
-		templateFile: `${pathPlop}/core/${type}/_self.js`,
+		templateFile: `plop/core/${type}/_self.js`,
 		type: `add`
 	})
 

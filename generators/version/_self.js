@@ -1,5 +1,3 @@
-const root = '../..'
-const plop = '..'
 const {fileContains, bumpComVer} = require('../helper')
 const R = require('rambdax')
 const globby = require('globby')
@@ -36,7 +34,7 @@ module.exports = {
 			})
 		) {
 			actions.push({
-				path: `${root}/iface/_self.js`,
+				path: `iface/_self.js`,
 				pattern: '/* PlopInjection:_self */',
 				template: `_selfVersions['${newVersion}'] = {}`,
 				type: 'append'

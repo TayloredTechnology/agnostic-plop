@@ -1,6 +1,3 @@
-const pathRoot = '../..'
-const pathPlop = '..'
-
 const R = require('rambdax')
 const globby = require('globby')
 const semverIncrement = require('semver-increment')
@@ -73,9 +70,9 @@ module.exports = {
 		// Increment Version to latest in all existing Verbs
 		verbs.forEach(verb => {
 			actions.push({
-				path: `${pathRoot}/shell/rests/{{ kebabCase name }}.js`,
+				path: `shell/rests/{{ kebabCase name }}.js`,
 				pattern: `/* PlopInjection:add${verb}Version */`,
-				templateFile: `${pathPlop}/shell/rest-version.hbs`,
+				templateFile: `plop/shell/rest-version.hbs`,
 				type: 'append'
 			})
 		})

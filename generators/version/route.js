@@ -1,6 +1,3 @@
-const pathRoot = '../..'
-const pathPlop = '..'
-
 const R = require('rambdax')
 const globby = require('globby')
 const rfdc = require('rfdc')({proto: true})
@@ -75,7 +72,7 @@ module.exports = {
 		if (answers.bump !== 'Minor') {
 			// Lock existing routes to latest version
 			actions.push({
-				path: `${pathRoot}/shell/routes/{{ kebabCase name }}.js`,
+				path: `shell/routes/{{ kebabCase name }}.js`,
 				pattern: /`\$\{config.versions.routes.*\}`/g,
 				template: `'${preComVer}'`,
 				type: 'modify'
@@ -88,9 +85,9 @@ module.exports = {
 				})
 				.forEach(verb => {
 					actions.push({
-						path: `${pathRoot}/shell/routes/{{ kebabCase name }}.js`,
+						path: `shell/routes/{{ kebabCase name }}.js`,
 						pattern: '/* PlopInjection:routeName */',
-						templateFile: `${pathPlop}/shell/route-verison.hbs`,
+						templateFile: `plop/shell/route-verison.hbs`,
 						type: 'append',
 						data: {verb: rfdc(verb.split('/').slice(-1)[0])}
 					})
@@ -105,9 +102,9 @@ module.exports = {
 			})
 		) {
 			actions.push({
-				path: `${pathRoot}/shell/routes/{{ kebabCase name }}.schema.js`,
+				path: `shell/routes/{{ kebabCase name }}.schema.js`,
 				pattern: '/* PlopInjection:addVersion */',
-				templateFile: `${pathPlop}/shell/schema-version.hbs`,
+				templateFile: `plop/shell/schema-version.hbs`,
 				type: 'append'
 			})
 		}
